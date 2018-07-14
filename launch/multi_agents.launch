@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<launch> 
+    <rosparam command="load" file="$(find gazebo_drl_env)/param/env.yaml" />   
+
+    <arg name="world_file"  default="$(find gazebo_drl_env)/worlds/empty.world"/>
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle]"/>
+    <arg name="gui" default="true"/>
+    <arg name="rviz" default="false"/>
+    <arg name="use_sim_time" value="true"/>
+
+    <!-- Generate edges -->
+    <node name="spawn_edge_1" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/edge_1.urdf -model edge_1" />
+    <node name="spawn_edge_2" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/edge_2.urdf -model edge_2" />
+    <node name="spawn_edge_3" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/edge_3.urdf -model edge_3" />
+    <node name="spawn_edge_4" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/edge_4.urdf -model edge_4" />
+    
+    <!-- set use_sim_time flag -->
+    <group if="$(arg use_sim_time)">
+        <param name="/use_sim_time" value="true" />
+    </group>
+
+    <!-- start rviz -->
+    <group if="$(arg rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gazebo_drl_env)/rviz/tf_show.rviz"/>
+    </group>
+    <!-- start gazebo client -->
+    <node name="gazebo" pkg="gazebo_ros" type="gzserver" output="screen" args="$(arg world_file)" />
+    <group if="$(arg gui)">
+        <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+    </group>
+
+    <!-- Turtlebot robot -->
+    <group ns="agent_1">
+	    <arg name="x_pos" default="-1.0"/>
+	    <arg name="y_pos" default="-1.0"/>
+	    <arg name="z_pos" default="0.0"/>
+        <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_1 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_1.urdf -x 3 -y -3 -z 0 -model agent_1_target" />
+    </group>
+
+    <group ns="agent_2">
+	    <arg name="x_pos" default="1.0"/>
+	    <arg name="y_pos" default="1.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_2 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_2.urdf -x -3 -y 3 -z 0 -model agent_2_target" />
+    </group>
+
+    <group ns="agent_3">
+	    <arg name="x_pos" default="-1.0"/>
+	    <arg name="y_pos" default="1.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_3 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_3.urdf -x 3 -y 3 -z 0 -model agent_3_target" />
+    </group>
+
+    <group ns="agent_4">
+	    <arg name="x_pos" default="1.0"/>
+	    <arg name="y_pos" default="-1.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_4 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_4.urdf -x -3 -y -3 -z 0 -model agent_4_target" />
+    </group>
+
+    <group ns="agent_5">
+	    <arg name="x_pos" default="2.0"/>
+	    <arg name="y_pos" default="-2.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_5 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_5.urdf -x -5 -y 5 -z 0 -model agent_5_target" />
+    </group>
+
+    <group ns="agent_6">
+	    <arg name="x_pos" default="-2.0"/>
+	    <arg name="y_pos" default="-2.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_6 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_6.urdf -x 5 -y -5 -z 0 -model agent_6_target" />
+    </group>
+
+    <group ns="agent_7">
+	    <arg name="x_pos" default="2.0"/>
+	    <arg name="y_pos" default="2.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_7 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_7.urdf -x 5 -y 5 -z 0 -model agent_7_target" />
+    </group>
+
+    <group ns="agent_8">
+	    <arg name="x_pos" default="-2.0"/>
+	    <arg name="y_pos" default="2.0"/>
+	    <arg name="z_pos" default="0.0"/>
+	    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model agent_8 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <node name="spawn_target" pkg="gazebo_ros" type="spawn_model" args="-urdf -file $(find gazebo_drl_env)/urdf/target_8.urdf -x -5 -y -5 -z 0 -model agent_8_target" />
+    </group>
+
+    <!--<include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />--> 
+    <!--node name="main_service" pkg="gazebo_drl_env" type="task_env_service" launch-prefix="xterm -e gdb -\-args"/>-->
+    <node name="main_service" pkg="gazebo_drl_env" type="task_env_service" />
+    <!--node name="target_tf" pkg="gazebo_drl_env" type="target_tf.py"/-->
+</launch>
